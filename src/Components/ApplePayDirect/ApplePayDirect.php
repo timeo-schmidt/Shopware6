@@ -270,8 +270,15 @@ class ApplePayDirect
         # make sure to get rid of any http prefixes or
         # also any sub shop slugs like /de or anything else
         # that would NOT work with Mollie and Apple Pay!
-        $domainExtractor = new DomainExtractor();
-        $domain = $domainExtractor->getCleanDomain($this->shopService->getShopUrl(true));
+
+        # Will first see if there is another domain set in MOLLIE_SHOP_DOMAIN
+        $domain_env = $this->pluginSettings->getEnvMollieShopDomain();
+        if (!empty($domain_env)) {
+            $domain = $domain_env;
+        } else {
+            $domainExtractor = new DomainExtractor();
+            $domain = $domainExtractor->getCleanDomain($this->shopService->getShopUrl(true));
+        }
 
         # we always have to use the LIVE api key for
         # our first domain validation for Apple Pay!
